@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self' 'unsafe-inline'; connect-src 'none'; img-src 'self' data:; font-src 'self'"
+  >
+  <title>Manufacturing Material Flow | Synthetic demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="engine.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header>
+    <span class="flag">Portfolio demo · Synthetic data</span>
+    <h1>Manufacturing Material Flow</h1>
+    <p>
+      Follow a request from acknowledgment to delivery. Make shortages visible, recover
+      interrupted updates, and retain a clear correction history.
+    </p>
+  </header>
+
+  <main>
+    <div class="notice">
+      Independent demonstration with fictional records and rules. It runs entirely in this
+      browser tab. Reload to reset.
+    </div>
+    <div class="toolbar">
+      <button id="reset">Reset demonstration</button>
+      <button id="connection">Simulate connection failure</button>
+      <button id="reconcile" class="primary">Reconcile delivery summaries</button>
+    </div>
+    <div id="message" role="status" aria-live="polite"></div>
+    <div id="metrics" class="metrics"></div>
+
+    <div class="layout">
+      <div>
+        <section>
+          <h2>Request queue</h2>
+          <p>
+            Requests sort by priority, then by submission order. Scheduled requests are
+            actionable immediately in this demo.
+          </p>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Priority</th>
+                  <th>Requested / delivered / short</th>
+                  <th>Status</th>
+                  <th>Next action</th>
+                </tr>
+              </thead>
+              <tbody id="queue"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>Record synthetic delivery</h2>
+          <form id="delivery" class="form">
+            <label>
+              Request
+              <select id="request"></select>
+            </label>
+            <label>
+              Container serial
+              <input id="serial" value="DEMO-BOX-A" required pattern="DEMO-[A-Za-z0-9-]+">
+            </label>
+            <label>
+              Quantity
+              <input id="quantity" type="number" min="1" step="1" value="40" required>
+            </label>
+            <label>
+              Failure simulation
+              <select id="failure">
+                <option value="">None</option>
+                <option value="summary">Summary update fails</option>
+                <option value="timeout">Response lost after save</option>
+              </select>
+            </label>
+            <button class="primary" type="submit">Record delivery</button>
+          </form>
+          <p>
+            A shortage is the quantity still owed on a request.
+            Overdelivery retains the actual quantity.
+          </p>
+        </section>
+
+        <section>
+          <h2>Delivery evidence</h2>
+          <label>
+            Correction / closure reason
+            <input id="reason" placeholder="Enter a synthetic review reason">
+          </label>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Delivery / request</th>
+                  <th>Serial</th>
+                  <th>Quantity</th>
+                  <th>State</th>
+                  <th>Correction</th>
+                </tr>
+              </thead>
+              <tbody id="deliveries"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>Create a request</h2>
+          <form id="form" class="form">
+            <label>
+              Quantity
+              <input id="qty" type="number" min="1" step="1" value="25" required>
+            </label>
+            <label>
+              Destination
+              <select id="destination">
+                <option>Cell A</option>
+                <option>Cell B</option>
+                <option>Cell C</option>
+              </select>
+            </label>
+            <label>
+              Priority
+              <select id="priority">
+                <option>Routine</option>
+                <option>Urgent</option>
+                <option>Scheduled</option>
+              </select>
+            </label>
+            <button type="submit">Create synthetic request</button>
+          </form>
+        </section>
+      </div>
+
+      <aside>
+        <section>
+          <h2>Five-minute walkthrough</h2>
+          <p>1. Acknowledge REQ-101, requesting 60 units.</p>
+          <p>2. Record DEMO-BOX-A with 40 units. The request stays open with a 20-unit shortage.</p>
+          <p>3. Submit that same serial again. It counts once.</p>
+          <p>4. Record DEMO-BOX-B with 20 units. The request completes.</p>
+          <p>
+            5. Enter a correction reason and void BOX-B. The shortage reopens and the
+            acknowledgment time stays the same. Restore the delivery to complete it again.
+          </p>
+          <details>
+            <summary>Recovery &amp; exception review</summary>
+            <p>
+              For another acknowledged request, choose “Summary update fails” or “Response lost
+              after save.” The delivery appears in evidence while the queue is marked stale.
+              Reconcile or retry the same serial to repair the summary without counting twice.
+            </p>
+            <p>
+              Try a serial already used by a different request, disable the simulated connection,
+              or close a shortage with a reason. Closure retains physical delivery evidence.
+            </p>
+          </details>
+        </section>
+
+        <section>
+          <h2>Exception lab</h2>
+          <button id="duplicate">Retry identical request twice</button>
+          <p>
+            Use the delivery form to explore repeat scans and interrupted updates.
+            Use Reset to start over.
+          </p>
+        </section>
+
+        <section>
+          <h2>Activity history</h2>
+          <ul id="events"></ul>
+        </section>
+
+        <section>
+          <h2>Scope</h2>
+          <p>
+            Independent, AI-assisted prototype. Request and delivery records live in memory
+            for one browser session. Connection and update failures are simulated.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
